@@ -23,14 +23,14 @@ io.on('connection', (socket) => {
     console.log('New user connected');
 
     // Greeting for a new user
-    socket.emit('newMessage', generateMessage('Admin','Welcome to best chat ever!'));
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to best chat ever!'));
 
     // Informing other users about new user / socket connection
-    socket.broadcast.emit('newMessage', generateMessage('Admin','A new user has joined!'));
+    socket.broadcast.emit('newMessage', generateMessage('Admin', 'A new user has joined!'));
 
-    socket.on('createMessage', (message) => {
-        io.emit('newMessage', generateMessage(message)) /* io.emits emits to every connection */
-
+    socket.on('createMessage', (message, callback) => {
+        io.emit('newMessage', generateMessage(message.from, message.text)) /* io.emits emits to every connection */
+        callback('Acknowlegement from server');
         // socket.broadcast.emit('newMessage', message); /* emits to everyone but the calling socket */
     })
 
