@@ -5,7 +5,7 @@ const http = require('http');
 const path = require('path');
 
 // LOCAL IMPORTS
-const {generateMessage} = require('./utils/message'); /* Generates message object to send to user */
+const {generateMessage, generateLocationMessage} = require('./utils/message'); /* Generates message object to send to user */
 
 // CONFIG
 const publicPath = path.join(__dirname, '../public'); /* Sets public files folder path */
@@ -28,11 +28,17 @@ io.on('connection', (socket) => {
     // Informing other users about new user / socket connection
     socket.broadcast.emit('newMessage', generateMessage('Admin', 'A new user has joined!'));
 
+    // Basic user message
     socket.on('createMessage', (message, callback) => {
         io.emit('newMessage', generateMessage(message.from, message.text)) /* io.emits emits to every connection */
-        callback('Acknowlegement from server');
+        callback();
         // socket.broadcast.emit('newMessage', message); /* emits to everyone but the calling socket */
     })
+
+    // User location message
+    socket.on('createLocationMessage', (position) => {
+        io.emit('newLocationMessage', generateLocationMessage('Admin', position.latitude, position.longitude));
+    });
 
     // Informing other users that a user has left
     socket.on('disconnect', () => {
