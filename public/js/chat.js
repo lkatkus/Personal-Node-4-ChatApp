@@ -4,7 +4,13 @@ socket.on('connect', function(){
     // Gets params from query string and converts to js object
     let params = $.deparam(window.location.search);
 
+    // Check if room was selected from list
+    if(params.room !== 'default' && params.room !== 'test' && params.room !== 'misc'){
+        return window.location.href = '/';
+    }
+
     socket.emit('join', params, function(err){
+        console.log('conn');
         if(err){
             alert(err);
             window.location.href = '/';
@@ -105,18 +111,18 @@ locationButton.on('click', function(){
         return alert('Geolocation not supported by your browser');
     }
 
-    locationButton.attr('disabled', 'disabled').text('Sending...'); /* disables button */
+    locationButton.attr('disabled', 'disabled').text('Sending...'); /* disables button after clicking */
 
     navigator.geolocation.getCurrentPosition(function(position){
         
-        locationButton.removeAttr('disabled').text('Send location');
+        locationButton.removeAttr('disabled').text('Send location'); /* removes disabled after delivering message */
 
         socket.emit('createLocationMessage', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
         });
     }, function(){
-        locationButton.removeAttr('disabled').text('Send location');
+        locationButton.removeAttr('disabled').text('Send location'); /* removes disable if not able to deliver message */ 
 
         alert('Unable to fetch location');
     })
